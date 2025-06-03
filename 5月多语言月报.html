@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多语言项目数据看板 - Bento Grid风格</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Framer Motion CDN -->
+    <script src="https://unpkg.com/framer-motion@10.12.18/dist/framer-motion.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dewublue': '#1890FF', // 得物极光蓝
+                        'dewu-light': 'rgba(24, 144, 255, 0.1)',
+                        'dewu-dark': '#0c5aa3',
+                        'dewu-accent': '#36c4ff'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .bento-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .bento-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        .bento-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1890FF, #36c4ff);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .bento-card:hover::before {
+            opacity: 1;
+        }
+        
+        .highlight-bg {
+            background: linear-gradient(135deg, rgba(24, 144, 255, 0.08) 0%, rgba(24, 144, 255, 0.01) 100%);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1890FF, #36c4ff);
+            border-radius: 4px;
+            transition: width 1.2s ease-out;
+        }
+        
+        .radial-progress {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(#1890FF var(--progress), #e0e0e0 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: --progress 1.5s ease;
+        }
+        
+        .radial-inner {
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .glow-box {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glow-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.4));
+            transform: skewX(-25deg);
+            animation: glow-animation 3s infinite;
+        }
+        
+        @keyframes glow-animation {
+            0% { left: -100%; }
+            50% { left: 150%; }
+            100% { left: 150%; }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body class="min-h-screen py-12 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto">
+        <!-- 标题区域 -->
+        <div class="text-center mb-16 animate-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                多语言5月月报
+            </h1>
+        </div>
+        
+        <!-- Bento Grid 布局 -->
+        <div class="bento-grid">
+            <!-- 词库建设 - 产品界面 -->
+            <div 
+                class="bento-card highlight-bg col-span-2 animate-in delay-1" 
+                id="product-interface"
+            >
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">词库建设</h2>
+                        <div class="flex items-center">
+                            <i class="fas fa-laptop text-dewublue mr-2"></i>
+                            <h3 class="text-lg font-semibold text-gray-700">产品界面</h3>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-5xl font-bold text-dewublue">92.4%</div>
+                        <p class="text-gray-500 mt-1">覆盖率</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center mb-6">
+                    <div class="flex-1">
+                        <div class="text-gray-700 mb-1">4502条词库 · 92.4%覆盖率</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 92.4%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="productCoverageChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 词库建设 - 商品内容 -->
+            <div 
+                class="bento-card highlight-bg col-span-2 animate-in delay-2" 
+                id="product-content"
+            >
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">词库建设</h2>
+                        <div class="flex items-center">
+                            <i class="fas fa-box text-dewublue mr-2"></i>
+                            <h3 class="text-lg font-semibold text-gray-700">商品内容</h3>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-5xl font-bold text-dewublue">91.5%</div>
+                        <p class="text-gray-500 mt-1">商品覆盖率</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center mb-6">
+                    <div class="flex-1">
+                        <div class="text-gray-700 mb-1">52630条词库 · 覆盖US上架且出价SPU91.5%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 91.5%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="contentCoverageChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 体验优化 + 基础建设并排 -->
+            <div class="col-span-4 grid grid-cols-2 gap-6">
+                <div class="bento-card animate-in delay-3 col-span-1" id="experience-optimization">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-8">体验优化</h2>
+                    
+                    <div class="mb-8 p-6 bg-dewu-light rounded-xl glow-box">
+                        <div class="flex items-start mb-4">
+                            <div class="bg-dewublue p-3 rounded-lg mr-4">
+                                <i class="fas fa-globe text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700">多语言走查和测试</h3>
+                                <p class="text-gray-600 mt-1">567~568多语言验收20个PRD</p>
+                            </div>
+                        </div>
+                        <div class="pl-16">
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="fas fa-file-alt text-dewublue mr-2"></i>
+                                <span>约1800条文案</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-shield-alt text-dewublue mr-2"></i>
+                                <span>拦截7个语言问题</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-dewu-light rounded-xl glow-box">
+                        <div class="flex items-start mb-4">
+                            <div class="bg-dewublue p-3 rounded-lg mr-4">
+                                <i class="fas fa-check-circle text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700">BBMAX多语言验收</h3>
+                                <p class="text-gray-600 mt-1">完成所有模块验收</p>
+                            </div>
+                        </div>
+                        <div class="pl-16">
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="fas fa-file-alt text-dewublue mr-2"></i>
+                                <span>约2000条文案</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-tools text-dewublue mr-2"></i>
+                                <span>修复150+语言问题</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bento-card animate-in delay-4 col-span-1" id="infrastructure">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-8">基础建设</h2>
+                    
+                    <div class="mb-8 p-6 bg-dewu-light rounded-xl glow-box">
+                        <div class="flex items-start">
+                            <div class="bg-dewublue p-3 rounded-lg mr-4">
+                                <i class="fas fa-plug text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700">场景对接进展</h3>
+                                <p class="text-gray-600 mt-2">买家用户及鉴定场景已全面接入多语言SDK</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pl-16">
+                            <div class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 mb-2">
+                                单复数
+                            </div>
+                            <div class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 mb-2">
+                                时间
+                            </div>
+                            <div class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 mb-2">
+                                日期
+                            </div>
+                            <div class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 mb-2">
+                                数字
+                            </div>
+                            <div class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 mb-2">
+                                货币金额
+                            </div>
+                            <div class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 mb-2">
+                                右到左展示
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-dewu-light rounded-xl glow-box">
+                        <div class="flex items-start">
+                            <div class="bg-dewublue p-3 rounded-lg mr-4">
+                                <i class="fas fa-map-signs text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700">本地化需求梳理</h3>
+                                <p class="text-gray-600 mt-2">App端需本地化所有场景</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pl-16">
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>买家场景</span>
+                            </div>
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>卖家场景</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>供应链场景</span>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-500">
+                                已与各域PM完成确认
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 运营效率 (包含成本优化) -->
+            <div class="bento-card col-span-4 animate-in delay-5" id="operational-efficiency">
+                <h2 class="text-2xl font-bold text-gray-800 mb-8">运营效率与成本优化</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- 日常迭代 -->
+                    <div class="p-6 bg-dewu-light rounded-xl glow-box">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-dewublue p-3 rounded-lg mr-4">
+                                <i class="fas fa-sync text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-700">日常迭代</h3>
+                        </div>
+                        <div class="pl-14">
+                            <div class="text-3xl font-bold text-dewublue mb-2">150,938<span class="text-lg">字</span></div>
+                            <div class="text-gray-600 mb-4">5月交付总量</div>
+                            
+                            <div class="mb-2">
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>产品界面文案</span>
+                                    <span>28,560字</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 19%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>触达内容</span>
+                                    <span>74,713字</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 49%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>其他文档翻译</span>
+                                    <span>47,665字</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 32%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- BBMAX 项目 -->
+                    <div class="p-6 bg-dewu-light rounded-xl glow-box">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-dewublue p-3 rounded-lg mr-4">
+                                <i class="fas fa-project-diagram text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-700">BBMAX 项目</h3>
+                        </div>
+                        <div class="pl-14">
+                            <div class="text-3xl font-bold text-dewublue mb-2">20,162<span class="text-lg">字</span></div>
+                            <div class="text-gray-600 mb-4">5月新增翻译</div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center text-gray-700 mb-2">
+                                    <i class="fas fa-laptop-code text-dewublue mr-2"></i>
+                                    <span>产品界面文案: 3,323字</span>
+                                </div>
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-file-contract text-dewublue mr-2"></i>
+                                    <span>文档翻译: 16,839字</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- KR 项目 -->
+                    <div class="p-6 bg-dewu-light rounded-xl glow-box">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-dewublue p-3 rounded-lg mr-4">
+                                <i class="fas fa-tasks text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-700">KR 项目</h3>
+                        </div>
+                        <div class="pl-14">
+                            <div class="text-3xl font-bold text-dewublue mb-2">22,776<span class="text-lg">字</span></div>
+                            <div class="text-gray-600 mb-4">5月翻译量</div>
+                            
+                            <div class="mb-3">
+                                <div class="text-gray-700 font-medium mb-2">新增内容:</div>
+                                <div class="flex items-center text-gray-700 mb-2">
+                                    <i class="fas fa-plus-circle text-dewublue mr-2"></i>
+                                    <span>产品界面与触达/文档: 9,000字</span>
+                                </div>
+                                <div class="flex items-center text-gray-700 mb-3">
+                                    <i class="fas fa-plus-circle text-dewublue mr-2"></i>
+                                    <span>商品内容: 约30,000字</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-calendar-day text-dewublue mr-2"></i>
+                                <span>DDL: 6.15 / 6.26</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 成本优化 -->
+                <div class="bg-gradient-to-r from-dewublue to-dewu-accent p-6 rounded-2xl text-white">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="mb-6 md:mb-0 md:pr-8">
+                            <h3 class="text-2xl font-bold mb-4">成本优化 · AI翻译</h3>
+                            <p class="mb-4 opacity-90">5月调用"词库定制机翻"翻译量</p>
+                            <div class="text-4xl font-bold mb-2">3.19B<span class="text-xl">字符</span></div>
+                            <div class="flex items-center opacity-90">
+                                <i class="fas fa-language mr-2"></i>
+                                <span>8种语言覆盖</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="text-5xl font-bold mb-2">¥895,208</div>
+                            <p class="opacity-90">5月节省金额</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部信息 -->
+        <div class="mt-12 text-center text-gray-500 text-sm">
+            <p>多语言项目数据看板 · 最后更新: 2025年6月</p>
+        </div>
+    </div>
+    
+    <script>
+        // 产品界面覆盖率数据
+        const productCoverageData = {
+            labels: [
+                '2024.06.14', '2024.06.28', '2024.07.05', '2024.07.12', 
+                '2024.07.19', '2024.07.26', '2024.08.02', '2024.08.09', 
+                '2024.08.16', '2024.08.23', '2024.09.06', '2024.09.14', 
+                '2024.10.27', '2025.02.07', '2025.02.28', '2025.03.18', 
+                '2025.04.27', '2025.05.30'
+            ],
+            coverage: [
+                31.89, 36.63, 40.10, 50.19, 
+                50.52, 54.81, 61.59, 65.99, 
+                66.16, 68.27, 77.19, 82.06, 
+                90.16, 90.83, 89.78, 90.38, 
+                92.54, 92.40
+            ],
+            entries: [
+                583, 736, 1029, 1309, 
+                1382, 1419, 1459, 1508, 
+                1508, 1537, 1672, 1829, 
+                3466, 4330, 4369, 4406, 
+                4470, 4499
+            ]
+        };
+
+        // 商品内容覆盖率数据
+        const contentCoverageData = {
+            labels: [
+                '2024.8.9', '2024.8.16', '2024.9.11', '2024.9.15', 
+                '2024.9.18', '2024.10.29', '2024.11.4', '2024.12.1', 
+                '2024.12.3', '2025.2.9', '2025.2.28', '2025.4.28', 
+                '2025.5.30'
+            ],
+            coverage: [
+                14.44, 41.38, 59.18, 73.66, 
+                73.06, 73.66, 53.57, 35.77, 
+                75.83, 85.20, 83.16, 90.65, 
+                91.50
+            ],
+            entries: [
+                4067, 5793, 6773, 10210, 
+                10210, 12773, 14595, 20061, 
+                21884, 28912, 32321, 40663, 
+                52630
+            ]
+        };
+
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 产品界面覆盖率图表
+            const productCtx = document.getElementById('productCoverageChart').getContext('2d');
+            new Chart(productCtx, {
+                type: 'line',
+                data: {
+                    labels: productCoverageData.labels,
+                    datasets: [{
+                        label: '产品界面覆盖率 (%)',
+                        data: productCoverageData.coverage,
+                        borderColor: '#1890FF',
+                        backgroundColor: 'rgba(24, 144, 255, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#1890FF',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#333',
+                            bodyColor: '#666',
+                            borderColor: '#eee',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    return [
+                                        `覆盖率: ${productCoverageData.coverage[index]}%`,
+                                        `词条数: ${productCoverageData.entries[index]}条`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                color: '#666',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#666',
+                                maxRotation: 0,
+                                callback: function(value, index) {
+                                    // 只显示部分标签避免重叠
+                                    return index % 3 === 0 ? this.getLabelForValue(value) : '';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+
+            // 商品内容覆盖率图表
+            const contentCtx = document.getElementById('contentCoverageChart').getContext('2d');
+            new Chart(contentCtx, {
+                type: 'line',
+                data: {
+                    labels: contentCoverageData.labels,
+                    datasets: [{
+                        label: '商品内容覆盖率 (%)',
+                        data: contentCoverageData.coverage,
+                        borderColor: '#36c4ff',
+                        backgroundColor: 'rgba(54, 196, 255, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#36c4ff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#333',
+                            bodyColor: '#666',
+                            borderColor: '#eee',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    return [
+                                        `覆盖率: ${contentCoverageData.coverage[index]}%`,
+                                        `词条数: ${contentCoverageData.entries[index]}条`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                color: '#666',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#666',
+                                maxRotation: 0,
+                                callback: function(value, index) {
+                                    // 只显示部分标签避免重叠
+                                    return index % 2 === 0 ? this.getLabelForValue(value) : '';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+
+            // 滚动动画效果
+            const cards = document.querySelectorAll('.bento-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            cards.forEach(card => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+            
+            // 进度条动画效果
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.transition = 'width 1.5s ease';
+                    bar.style.width = width;
+                }, 500);
+            });
+            
+            // 环形进度条动画
+            const radialProgress = document.querySelector('.radial-progress');
+            setTimeout(() => {
+                radialProgress.style.setProperty('--progress', '87%');
+            }, 300);
+        });
+    </script>
+</body>
+</html>
