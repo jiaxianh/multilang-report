@@ -1,280 +1,592 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>多语言词库建设与翻译项目数据</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多语言7月进展</title>
+    <script src="https://unpkg.com/tailwindcss-jit-cdn"></script>
+    <script src="https://unpkg.com/framer-motion@11.0.3/dist/framer-motion.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-      body {
-        font-family: 'Microsoft YaHei', Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 20px;
-        background-color: #f5f5f5;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      }
-      h1 {
-        color: #2c3e50;
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 2.5em;
-      }
-      h2 {
-        color: #34495e;
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 10px;
-        margin-top: 30px;
-      }
-      h3 {
-        color: #2980b9;
-        margin-top: 25px;
-      }
-      .data-section {
-        margin: 20px 0;
-        padding: 15px;
-        background: #f8f9fa;
-        border-left: 4px solid #3498db;
-        border-radius: 4px;
-      }
-      .highlight {
-        background: #e8f4fd;
-        padding: 10px;
-        border-radius: 4px;
-        margin: 10px 0;
-      }
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        margin: 20px 0;
-      }
-      .stat-card {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        border-top: 4px solid #3498db;
-      }
-      .stat-number {
-        font-size: 2em;
-        font-weight: bold;
-        color: #e74c3c;
-      }
-      .stat-label {
-        color: #7f8c8d;
-        font-size: 0.9em;
-        margin-top: 5px;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 15px 0;
-        font-size: 0.9em;
-      }
-      th, td {
-        border: 1px solid #ddd;
-        padding: 8px 12px;
-        text-align: left;
-      }
-      th {
-        background-color: #3498db;
-        color: white;
-        font-weight: bold;
-      }
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-      .progress-bar {
-        width: 100%;
-        height: 20px;
-        background-color: #ecf0f1;
-        border-radius: 10px;
-        overflow: hidden;
-        margin: 10px 0;
-      }
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #3498db, #2ecc71);
-        transition: width 0.3s ease;
-      }
+        :root {
+            --aurora-blue: #00D4FF;
+            --aurora-blue-dark: #0099CC;
+            --aurora-blue-light: #E6F9FF;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', 'Inter', sans-serif;
+            background: #FFFFFF;
+            overflow-x: hidden;
+        }
+        
+        .aurora-gradient {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 212, 255, 0.05) 100%);
+        }
+        
+        .aurora-text {
+            background: linear-gradient(135deg, var(--aurora-blue) 0%, var(--aurora-blue-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+        }
+        
+        .giant-number {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 800;
+            line-height: 0.8;
+            letter-spacing: -0.05em;
+        }
+        
+        .bento-card {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .bento-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.15);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--aurora-blue) 0%, var(--aurora-blue-dark) 100%);
+            height: 4px;
+            border-radius: 2px;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <div class="container">
-      <h1>多语言7月进展</h1>
-      
-      <h2>词库建设成果</h2>
-      
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">4627</div>
-          <div class="stat-label">产品界面词条数</div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 92.4%"></div>
-          </div>
-          <div style="text-align: center; margin-top: 5px; color: #27ae60;">覆盖率: 92.4%</div>
+</head>
+<body>
+
+
+    <!-- 标题和核心数据展示 -->
+    <section class="py-12 px-6">
+        <div class="text-center mb-12">
+            <motion.h1 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                class="hero-title text-gray-900 mb-4"
+            >
+                多语言<br>7月进展
+            </motion.h1>
+            <motion.p 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                class="text-xl text-gray-600"
+            >
+                Multilingual Product Report - July
+            </motion.p>
         </div>
         
-        <div class="stat-card">
-          <div class="stat-number">54987</div>
-          <div class="stat-label">商品内容词条数</div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 94.02%"></div>
-          </div>
-          <div style="text-align: center; margin-top: 5px; color: #27ae60;">覆盖率: 94.02%</div>
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 产品界面词库 -->
+                <motion.div 
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-gray-900">产品界面</h3>
+                        <i class="fas fa-desktop aurora-text text-3xl"></i>
+                    </div>
+                    <div class="giant-number aurora-text mb-2">4,627</div>
+                    <p class="text-sm text-gray-500 mb-4">Product Interface Entries</p>
+                    <div class="flex items-center">
+                        <span class="text-3xl font-bold text-gray-900">92.4%</span>
+                        <span class="text-sm text-gray-500 ml-2">Coverage Rate</span>
+                    </div>
+                    <div class="mt-4">
+                        <div class="progress-bar" style="width: 92.4%"></div>
+                    </div>
+                </motion.div>
+
+                <!-- 商品内容词库 -->
+                <motion.div 
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-gray-900">商品内容</h3>
+                        <i class="fas fa-shopping-bag aurora-text text-3xl"></i>
+                    </div>
+                    <div class="giant-number aurora-text mb-2">54,987</div>
+                    <p class="text-sm text-gray-500 mb-4">Product Content Entries</p>
+                    <div class="flex items-center">
+                        <span class="text-3xl font-bold text-gray-900">94.02%</span>
+                        <span class="text-sm text-gray-500 ml-2">Coverage Rate</span>
+                    </div>
+                    <div class="mt-4">
+                        <div class="progress-bar" style="width: 94.02%"></div>
+                    </div>
+                </motion.div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <h3>产品界面词库建设进度</h3>
-      <div class="data-section">
-        <table>
-          <thead>
-            <tr>
-              <th>时间</th>
-              <th>产品界面词条数</th>
-              <th>命中词库的文案条数</th>
-              <th>产品界面文案数</th>
-              <th>产品界面词条覆盖率</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>2024.06.14</td><td>583</td><td>7353</td><td>23060</td><td>31.89%</td></tr>
-            <tr><td>2024.06.28</td><td>736</td><td>8529</td><td>23285</td><td>36.63%</td></tr>
-            <tr><td>2024.07.05</td><td>1029</td><td>9460</td><td>23593</td><td>40.10%</td></tr>
-            <tr><td>2024.07.12</td><td>1309</td><td>11918</td><td>23744</td><td>50.19%</td></tr>
-            <tr><td>2024.07.19</td><td>1382</td><td>12019</td><td>23790</td><td>50.52%</td></tr>
-            <tr><td>2024.07.26</td><td>1419</td><td>13194</td><td>24071</td><td>54.81%</td></tr>
-            <tr><td>2024.08.02</td><td>1459</td><td>15029</td><td>24401</td><td>61.59%</td></tr>
-            <tr><td>2024.08.09</td><td>1508</td><td>16410</td><td>24866</td><td>65.99%</td></tr>
-            <tr><td>2024.08.16</td><td>1508</td><td>16660</td><td>25180</td><td>66.16%</td></tr>
-            <tr><td>2024.08.23</td><td>1537</td><td>17353</td><td>25417</td><td>68.27%</td></tr>
-            <tr><td>2024.09.06</td><td>1672</td><td>19911</td><td>25794</td><td>77.19%</td></tr>
-            <tr><td>2024.09.14</td><td>1829</td><td>21528</td><td>26234</td><td>82.06%</td></tr>
-            <tr><td>2024.10.27</td><td>3466</td><td>25102</td><td>27842</td><td>90.16%</td></tr>
-            <tr><td>2025.02.07</td><td>4330</td><td>28776</td><td>31680</td><td>90.83%</td></tr>
-            <tr><td>2025.02.28</td><td>4369</td><td>31735</td><td>35349</td><td>89.78%</td></tr>
-            <tr><td>2025.03.18</td><td>4406</td><td>32542</td><td>36004</td><td>90.38%</td></tr>
-            <tr><td>2025.04.27</td><td>4470</td><td>47613</td><td>51452</td><td>92.54%</td></tr>
-            <tr><td>2025.05.30</td><td>4499</td><td>50255</td><td>54391</td><td>92.40%</td></tr>
-            <tr><td>2025.06.19</td><td>4548</td><td>52968</td><td>57020</td><td>92.89%</td></tr>
-            <tr><td>2025.07.29</td><td>4627</td><td>53529</td><td>57918</td><td>92.89%</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>商品内容词库建设进度</h3>
-      <div class="data-section">
-        <table>
-          <thead>
-            <tr>
-              <th>时间</th>
-              <th>商品词条数</th>
-              <th>命中词库的商品数</th>
-              <th>在架海外商品总数</th>
-              <th>商品词条覆盖率</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>2024.8.9</td><td>4067</td><td>160708</td><td>1113007</td><td>14.44%</td></tr>
-            <tr><td>2024.8.16</td><td>5793</td><td>460512</td><td>1113007</td><td>41.38%</td></tr>
-            <tr><td>2024.9.11</td><td>6773</td><td>1002407</td><td>1693722</td><td>59.18%</td></tr>
-            <tr><td>2024.9.15</td><td>10210</td><td>1139034</td><td>1546435</td><td>73.66%</td></tr>
-            <tr><td>2024.9.18</td><td>10210</td><td>1539509</td><td>2107137</td><td>73.06%</td></tr>
-            <tr><td>2024.10.29</td><td>12773</td><td>978796</td><td>1328856</td><td>73.66%</td></tr>
-            <tr><td>2024.11.4</td><td>14595</td><td>2426424</td><td>4529160</td><td>53.57%</td></tr>
-            <tr><td>2024.12.1</td><td>20061</td><td>567579</td><td>1586876</td><td>35.77%</td></tr>
-            <tr><td>2024.12.3</td><td>21884</td><td>1138992</td><td>1501956</td><td>75.83%</td></tr>
-            <tr><td>2025.2.9</td><td>28912</td><td>1514856</td><td>1778000</td><td>85.20%</td></tr>
-            <tr><td>2025.2.28</td><td>32321</td><td>1784314</td><td>2145515</td><td>83.16%</td></tr>
-            <tr><td>2025.4.28</td><td>40663</td><td>2823153</td><td>3114253</td><td>90.65%</td></tr>
-            <tr><td>2025.5.30</td><td>52630</td><td>2710066</td><td>2961886</td><td>91.50%</td></tr>
-            <tr><td>2025.7.29</td><td>54987</td><td>67922</td><td>75036</td><td>90.52%</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h2>体验优化</h2>
-      <div class="highlight">
-        <strong>多语言走查和测试：</strong>571~572多语言验收24个PRD，约1600条文案，共拦截8个语言问题
-      </div>
-
-      <h2>多语言基建</h2>
-      <div class="data-section">
-        <h3>多语言SDK对接进展</h3>
-        <p>买家用户及鉴定场景已全面接入多语言SDK，支持：</p>
-        <ul>
-          <li>单复数处理</li>
-          <li>时间格式化</li>
-          <li>日期格式化</li>
-          <li>数字格式化</li>
-          <li>货币金额格式化</li>
-          <li>右到左展示支持</li>
-        </ul>
-        
-        <h3>本地化需求梳理</h3>
-        <p>PC商家后台需本地化重点场景（出价、商品、结算、履约等）场景梳理完毕，排期中</p>
-      </div>
-
-      <h2>运营效率</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">129,378</div>
-          <div class="stat-label">Q2日常迭代总交付字数</div>
-          <ul style="margin-top: 10px; font-size: 0.9em;">
-            <li>产品界面文案：57,554字</li>
-            <li>文档内容：45,049字</li>
-            <li>触达内容：26,775字</li>
-          </ul>
+    <!-- 覆盖率趋势 -->
+    <section class="py-12 px-6 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                class="text-center mb-8"
+            >
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">覆盖率趋势</h2>
+                <p class="text-lg text-gray-600">Coverage Trends</p>
+            </motion.div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <motion.div 
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="chart-container bento-card bg-white p-6"
+                >
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">产品界面覆盖率趋势</h3>
+                    <canvas id="interfaceChart"></canvas>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="chart-container bento-card bg-white p-6"
+                >
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">商品内容覆盖率趋势</h3>
+                    <canvas id="contentChart"></canvas>
+                </motion.div>
+            </div>
         </div>
-        
-        <div class="stat-card">
-          <div class="stat-number">84,905</div>
-          <div class="stat-label">KR项目已收到提需字数</div>
-          <div style="color: #27ae60; margin-top: 10px;">✓ 已全部翻译完成</div>
-          <ul style="margin-top: 10px; font-size: 0.9em;">
-            <li>交互文案：38,152字</li>
-            <li>文档内容：6,405字</li>
-            <li>触达内容：2,806字</li>
-            <li>商品词条：37,542字</li>
-          </ul>
-        </div>
-      </div>
+    </section>
 
-      <div class="highlight">
-        <strong>其他重点项目：</strong>Q2共交付产品界面文案83,480字（其中鉴别新增点位翻译到小语种共79,030字）
-      </div>
+    <!-- AI翻译应用 -->
+    <section class="py-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                class="text-center mb-8"
+            >
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">AI翻译应用</h2>
+                <p class="text-lg text-gray-600">AI Translation Applications</p>
+            </motion.div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <motion.div 
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">商品词库AI翻译</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-4xl font-bold aurora-text">4,368,035,357</p>
+                            <p class="text-sm text-gray-500">7月调用字符数</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-900">8个语言</p>
+                            <p class="text-sm text-gray-500">支持语言</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-green-600">￥1,223,049.9</p>
+                            <p class="text-sm text-gray-500">节省成本</p>
+                        </div>
+                    </div>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">鉴别点位AI翻译</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-4xl font-bold aurora-text">70%</p>
+                            <p class="text-sm text-gray-500">无需改动比例</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-green-600">￥16,000</p>
+                            <p class="text-sm text-gray-500">节省成本</p>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-check-circle text-green-500 mr-1"></i>
+                            指令精调模型，翻译后人工审核
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </div>
+    </section>
 
-      <h2>AI翻译应用</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">4,368,035,357</div>
-          <div class="stat-label">7月商品词库AI翻译字符数</div>
-          <div style="margin-top: 10px;">
-            <p><strong>覆盖语言：</strong>8个语言</p>
-            <p><strong>节省成本：</strong>￥1,223,049.9元</p>
-          </div>
+    <!-- 体验优化 -->
+    <section class="py-12 px-6 aurora-gradient">
+        <div class="max-w-7xl mx-auto">
+            <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                class="text-center mb-8"
+            >
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">体验优化</h2>
+                <p class="text-lg text-gray-600">Experience Optimization</p>
+            </motion.div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl text-center"
+                >
+                    <i class="fas fa-check-circle aurora-text text-5xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">多语言验收</h3>
+                    <p class="text-3xl font-bold aurora-text mb-2">24</p>
+                    <p class="text-gray-600">PRDs</p>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    class="bento-card bg-white p-8 rounded-2xl text-center"
+                >
+                    <i class="fas fa-file-alt aurora-text text-5xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">文案处理</h3>
+                    <p class="text-3xl font-bold aurora-text mb-2">1,600</p>
+                    <p class="text-gray-600">Copies</p>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    class="bento-card bg-white p-8 rounded-2xl text-center"
+                >
+                    <i class="fas fa-shield-alt aurora-text text-5xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">问题拦截</h3>
+                    <p class="text-3xl font-bold aurora-text mb-2">8</p>
+                    <p class="text-gray-600">Issues</p>
+                </motion.div>
+            </div>
         </div>
-        
-        <div class="stat-card">
-          <div class="stat-number">70%</div>
-          <div class="stat-label">鉴别点位AI翻译无需改动率</div>
-          <div style="margin-top: 10px;">
-            <p><strong>技术方案：</strong>使用鉴别点位词库，指令精调模型，翻译后再人工审核</p>
-            <p><strong>节省成本：</strong>约￥16,000元</p>
-          </div>
+    </section>
+
+    <!-- 多语言基建 -->
+    <section class="py-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                class="text-center mb-8"
+            >
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">多语言基建</h2>
+                <p class="text-lg text-gray-600">Multilingual Infrastructure</p>
+            </motion.div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <motion.div 
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <div class="flex items-start">
+                        <i class="fas fa-plug aurora-text text-4xl mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">多语言SDK对接</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                买家用户及鉴定场景已全面接入多语言SDK<br>
+                                <span class="text-sm text-gray-500">(单复数、时间、日期、数字、货币金额及右到左展示)</span>
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <div class="flex items-start">
+                        <i class="fas fa-map-marked-alt aurora-text text-4xl mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">本地化需求梳理</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                PC商家后台需本地化重点场景<br>
+                                <span class="text-sm text-gray-500">(出价、商品、结算、履约等) 场景梳理完毕，排期中</span>
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
         </div>
-      </div>
-    </div>
-    
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    </section>
+
+    <!-- 运营效率 -->
+    <section class="py-12 px-6 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                class="text-center mb-8"
+            >
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">运营效率</h2>
+                <p class="text-lg text-gray-600">Operational Efficiency</p>
+            </motion.div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">日常迭代</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">产品界面文案</span>
+                            <span class="font-bold">57,554 字</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">文档内容</span>
+                            <span class="font-bold">45,049 字</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">触达内容</span>
+                            <span class="font-bold">26,775 字</span>
+                        </div>
+                        <div class="pt-2 border-t">
+                            <div class="flex justify-between text-lg">
+                                <span class="font-bold">总计</span>
+                                <span class="aurora-text font-bold">129,378 字</span>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">KR项目</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">提需总量</span>
+                            <span class="font-bold">84,905 字</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">交互文案</span>
+                            <span class="font-bold">38,152 字</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">文档内容</span>
+                            <span class="font-bold">6,405 字</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">商品词条</span>
+                            <span class="font-bold">37,542 字</span>
+                        </div>
+                    </div>
+                </motion.div>
+                
+                <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    class="bento-card bg-white p-8 rounded-2xl"
+                >
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">重点项目</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">产品界面文案</span>
+                            <span class="font-bold">83,480 字</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 text-sm">鉴别新增点位翻译</span>
+                            <span class="font-bold">79,030 字</span>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 产品界面图表
+        const interfaceCtx = document.getElementById('interfaceChart');
+        new Chart(interfaceCtx, {
+            type: 'line',
+            data: {
+                labels: ['2024.06.14', '2024.06.28', '2024.07.05', '2024.07.12', '2024.07.19', '2024.07.26', '2024.08.02', '2024.08.09', '2024.08.16', '2024.08.23', '2024.09.06', '2024.09.14', '2024.10.27', '2025.02.07', '2025.02.28', '2025.03.18', '2025.04.27', '2025.05.30', '2025.06.19', '2025.07.29'],
+                datasets: [{
+                    label: '覆盖率 (%)',
+                    data: [31.89, 36.63, 40.10, 50.19, 50.52, 54.81, 61.59, 65.99, 66.16, 68.27, 77.19, 82.06, 90.16, 90.83, 89.78, 90.38, 92.54, 92.40, 92.89, 92.89],
+                    borderColor: '#00D4FF',
+                    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#00D4FF',
+                    pointBorderColor: '#FFFFFF',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'rgba(0, 212, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#6B7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+
+        // 商品内容图表
+        const contentCtx = document.getElementById('contentChart');
+        new Chart(contentCtx, {
+            type: 'line',
+            data: {
+                labels: ['2024.8.9', '2024.8.16', '2024.9.11', '2024.9.15', '2024.9.18', '2024.10.29', '2024.11.4', '2024.12.1', '2024.12.3', '2025.2.9', '2025.2.28', '2025.4.28', '2025.5.30', '2025.7.29'],
+                datasets: [{
+                    label: '覆盖率 (%)',
+                    data: [14.44, 41.38, 59.18, 73.66, 73.06, 73.66, 53.57, 35.77, 75.83, 85.20, 83.16, 90.65, 91.50, 90.52],
+                    borderColor: '#00D4FF',
+                    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#00D4FF',
+                    pointBorderColor: '#FFFFFF',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'rgba(0, 212, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#6B7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
 </html>
