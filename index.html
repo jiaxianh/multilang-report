@@ -3,281 +3,488 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多语言8月月报 | August Multilingual Report</title>
-    
-    <!-- TailwindCSS via CDN -->
+    <title>多语言10月月报 | Multilingual Report</title>
+
+    <!-- 1. 引入 TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Font Awesome Icons via CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- 2. 引入 Font Awesome CDN (用于图标) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- 3. 引入 Framer Motion CDN (按要求) -->
+    <!-- 注意: Framer Motion 主要用于 React。此处按要求引入，但动画效果将使用更适合纯HTML/JS的 Intersection Observer 实现。 -->
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10/dist/motion.min.js"></script>
+
+    <!-- 4. 引入 Chart.js CDN (用于图表) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- 5. 自定义配置和样式 -->
     <style>
-        /* Custom styles for typography and theme */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #ffffff;
-            color: #1a202c;
+        /* 自定义Inter字体 (Apple风格) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+        /* 滚动动画的基础样式 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.215, 0.61, 0.355, 1), transform 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+            transition-delay: 0.1s; /* 默认轻微延迟 */
         }
-        .aurora-blue-text {
-            color: #3B82F6;
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .aurora-blue-bg {
-            background-color: #3B82F6;
-        }
-        .bento-box {
-            background-color: #f8fafc;
-            border-radius: 1.5rem; /* 24px */
-            padding: 2rem; /* 32px */
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-            position: relative;
-        }
-        .highlight-text {
-            font-size: clamp(2.5rem, 8vw, 6rem); /* Responsive large text */
-            font-weight: 800; /* extrabold */
-            line-height: 1;
-            letter-spacing: -0.05em;
-            color: #3B82F6;
-        }
-        .apexcharts-tooltip {
-            background: #ffffff !important;
-            color: #1a202c !important;
-            border: 1px solid #e2e8f0 !important;
-        }
+
+        /* 辅助类，用于交错动画延迟 */
+        .reveal-delay-1 { transition-delay: 0.15s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.25s; }
+        .reveal-delay-4 { transition-delay: 0.3s; }
     </style>
+
+    <!-- 6. Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // 定义 "得物极光蓝"
+                        auroraBlue: '#00A0FF',
+                        auroraBlueDark: '#007ACC',
+                    },
+                    borderRadius: {
+                        '2xl': '1.0rem',
+                        '3xl': '1.5rem',
+                        '4xl': '2.0rem',
+                    },
+                },
+            },
+        };
+    </script>
 </head>
-<body class="antialiased">
 
-    <div class="container mx-auto p-4 md:p-8">
+<body class="bg-white font-sans antialiased">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-8 lg:p-12">
         
-        <!-- Main Wrapper with Grid Layout -->
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <!-- 头部 -->
+        <header class="mb-12">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight">
+                多语言10月月报
+            </h1>
+            <p class="mt-2 text-lg sm:text-xl text-auroraBlue font-semibold uppercase tracking-wider">
+                Multilingual Report / August
+            </p>
+        </header>
 
-            <!-- Header -->
-            <header class="bento-box md:col-span-3 lg:col-span-4" data-motion-initial="hidden">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900">多语言8月月报</h1>
-                        <p class="text-lg md:text-xl text-gray-500 mt-2">AUGUST MULTILINGUAL REPORT</p>
+        <!-- Bento Grid 布局 -->
+        <!-- 使用 md:grid-cols-6 来创建更灵活的Bento布局 -->
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 sm:gap-6">
+
+            <!-- =================================== -->
+            <!-- 第一部分: 提升用户价值 -->
+            <!-- =================================== -->
+            <h2 class="md:col-span-6 text-3xl font-bold text-gray-900 mt-8 mb-4 reveal">
+                一、提升用户价值
+                <span class="text-base uppercase text-gray-500 font-medium ml-2">User Value</span>
+            </h2>
+
+            <!-- 卡片 1: 商详页 (大卡) -->
+            <div class="reveal reveal-delay-1 md:col-span-3 lg:row-span-2 bg-neutral-50 rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden relative min-h-[300px]">
+                <!-- 科技感渐变光晕 -->
+                <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-auroraBlue/20 rounded-full blur-3xl -z-0" aria-hidden="true"></div>
+                
+                <div class="z-10">
+                    <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Product Detail Page</p>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mt-2">商详页多语言</h3>
+                </div>
+                
+                <div class="z-10 mt-8">
+                    <div class="flex items-baseline">
+                        <span class="text-6xl lg:text-8xl font-extrabold text-auroraBlue">90</span>
+                        <span class="text-5xl lg:text-7xl font-extrabold text-auroraBlue">%</span>
                     </div>
-                    <div class="text-3xl aurora-blue-text opacity-50">
-                        <i class="fa-solid fa-globe"></i>
+                    <p class="text-lg font-semibold text-gray-700 mt-2">英、俄商品信息翻译准确率</p>
+                    <p class="text-base text-gray-600 mt-4">
+                        韩语准确率 <span class="font-bold text-gray-800">80%</span><br>
+                        AI生成商品故事覆盖头部 <span class="font-bold text-gray-800">5000+</span> 商品<br>
+                        AI生成SEO标题覆盖头部 <span class="font-bold text-gray-800">900+</span> 商品
+                    </p>
+                </div>
+            </div>
+
+            <!-- 卡片 2: 搜索多语言 -->
+            <div class="reveal reveal-delay-2 md:col-span-3 lg:col-span-2 bg-neutral-50 rounded-3xl p-6 sm:p-8 overflow-hidden relative min-h-[300px] flex flex-col justify-between">
+                <i class="fa-solid fa-search text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <div>
+                    <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Search</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-2">搜索多语言</h3>
+                </div>
+                <div>
+                    <span class="text-6xl lg:text-7xl font-extrabold text-gray-900">100<span class="text-auroraBlue">%</span></span>
+                    <p class="text-lg font-semibold text-gray-700 mt-2">语种识别准确率 (月度评测)</p>
+                    <p class="text-base text-gray-600 mt-4">
+                        俄语搜索词整体 <span class="font-bold text-gray-800">93.29%</span><br>
+                        头部词 <span class="font-bold text-gray-800">99.91%</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 卡片 3: 评价多语言 -->
+            <div class="reveal reveal-delay-3 md:col-span-3 lg:col-span-1 bg-neutral-50 rounded-3xl p-6 sm:p-8 overflow-hidden relative min-h-[300px] flex flex-col justify-between">
+                <i class="fa-solid fa-comments text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <div>
+                    <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Reviews</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-2">评价多语言</h3>
+                </div>
+                <div>
+                    <span class="text-6xl lg:text-7xl font-extrabold text-gray-900">90<span class="text-auroraBlue">%</span></span>
+                    <p class="text-lg font-semibold text-gray-700 mt-2">中-&gt;俄韩 翻译通过率</p>
+                </div>
+            </div>
+
+            <!-- 卡片 4: AI自动巡检 -->
+            <div class="reveal reveal-delay-4 md:col-span-3 bg-neutral-50 rounded-3xl p-6 sm:p-8 overflow-hidden relative">
+                <i class="fa-solid fa-robot text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <div>
+                    <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">AI Ops & Auto-Fix</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-2">AI自动巡检和修复</h3>
+                    <p class="text-lg text-gray-600 mt-4">
+                        使用 <span class="font-bold text-auroraBlue">Agent 工作流</span> 自动评估商品内容翻译准确率并及时纠正。
+                    </p>
+                    <p class="mt-4 text-base font-semibold text-gray-800 bg-auroraBlue/10 px-3 py-1 rounded-full inline-block">
+                        V 579 已发布并投入使用
+                    </p>
+                </div>
+            </div>
+
+
+            <!-- =================================== -->
+            <!-- 第二部分: 保障用户体验 -->
+            <!-- =================================== -->
+            <h2 class="md:col-span-6 text-3xl font-bold text-gray-900 mt-16 mb-4 reveal">
+                二、保障用户体验
+                <span class="text-base uppercase text-gray-500 font-medium ml-2">User Experience</span>
+            </h2>
+
+            <!-- 卡片 5: 海外卖家沟通 -->
+            <div class="reveal reveal-delay-1 md:col-span-3 bg-neutral-50 rounded-3xl p-6 sm:p-8 relative">
+                <i class="fa-solid fa-globe-americas text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Seller Communication</p>
+                <h3 class="text-2xl font-bold text-gray-900 mt-2">海外卖家沟通</h3>
+                <ul class="list-disc list-outside pl-5 mt-4 space-y-2 text-base text-gray-600">
+                    <li>云鉴商家与鉴别师沟通翻译 (<span class="font-bold text-gray-800">11语种</span> &lt;-&gt; 中文)</li>
+                    <li>提供物流轨迹翻译能力 (中 -&gt; <span class="font-bold text-gray-800">英日韩法</span>)</li>
+                    <li>商家后台俄语化 (支持RU本本项目)</li>
+                </ul>
+            </div>
+
+            <!-- 卡片 6: 海外用户鉴定 (大卡) -->
+            <div class="reveal reveal-delay-2 md:col-span-3 lg:row-span-2 bg-auroraBlue text-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden relative min-h-[300px]">
+                <!-- 白色光晕 -->
+                <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-white/20 rounded-full blur-3xl -z-0" aria-hidden="true"></div>
+                
+                <div class="z-10">
+                    <p class="text-xs uppercase text-white/80 font-semibold tracking-wider">Overseas Authentication</p>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-white mt-2">海外用户鉴定</h3>
+                </div>
+                
+                <div class="z-10 mt-8">
+                    <div class="flex items-baseline">
+                        <span class="text-6xl lg:text-8xl font-extrabold text-white">100</span>
+                        <span class="text-5xl lg:text-7xl font-extrabold text-white">W+</span>
+                    </div>
+                    <p class="text-lg font-semibold text-white/90 mt-2">RMB 成本节省</p>
+                    <p class="text-base text-white/90 mt-4">
+                        使用鉴定场景精调AI翻译，搬迁国内鉴定内容超 <span class="font-bold text-white">200W</span> 字
+                    </p>
+                </div>
+            </div>
+
+            <!-- 卡片 7: 内部系统本地化 -->
+            <div class="reveal reveal-delay-3 md:col-span-3 lg:col-span-2 bg-neutral-50 rounded-3xl p-6 sm:p-8 relative">
+                <i class="fa-solid fa-cogs text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Internal Systems</p>
+                <h3 class="text-2xl font-bold text-gray-900 mt-2">内部系统本地化</h3>
+                <ul class="list-disc list-outside pl-5 mt-4 space-y-2 text-base text-gray-600">
+                    <li>完成 <span class="font-bold text-gray-800">PINKO</span> 系统英语、俄语化</li>
+                    <li>完成 <span class="font-bold text-gray-800">POIZON Global</span> 和 智能运营平台本地化需求调研</li>
+                </ul>
+            </div>
+
+            <!-- 卡片 8: 产品界面走查 -->
+            <div class="reveal reveal-delay-4 md:col-span-3 lg:col-span-1 bg-neutral-50 rounded-3xl p-6 sm:p-8 relative flex flex-col justify-between min-h-[200px]">
+                <i class="fa-solid fa-clipboard-check text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <div>
+                    <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">UI QA</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-2">产品界面走查</h3>
+                </div>
+                <div>
+                    <span class="text-5xl font-extrabold text-gray-900">291</span>
+                    <p class="text-lg font-semibold text-gray-700 mt-1">Q3 存量页面发现问题</p>
+                    <p class="text-base text-gray-600 mt-1">剩余 <span class="font-bold text-gray-800">13</span> 个</p>
+                </div>
+            </div>
+
+            <!-- =================================== -->
+            <!-- 第三部分: 提高产能效率 -->
+            <!-- =================================== -->
+            <h2 class="md:col-span-6 text-3xl font-bold text-gray-900 mt-16 mb-4 reveal">
+                三、提高产能效率
+                <span class="text-base uppercase text-gray-500 font-medium ml-2">Productivity & Efficiency</span>
+            </h2>
+
+            <!-- 卡片 9: 成本 (大卡) -->
+            <div class="reveal reveal-delay-1 md:col-span-3 lg:row-span-2 bg-neutral-900 text-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden relative min-h-[300px]">
+                <!-- 科技感渐变光晕 -->
+                <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-auroraBlue/40 rounded-full blur-3xl -z-0" aria-hidden="true"></div>
+                
+                <div class="z-10">
+                    <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Cost Saving</p>
+                    <h3 class="text-2xl lg:text-3xl font-bold text-white mt-2">成本</h3>
+                </div>
+                
+                <div class="z-10 mt-8 space-y-8">
+                    <div>
+                        <div class="flex items-baseline">
+                            <span class="text-6xl lg:text-8xl font-extrabold text-auroraBlue">76</span>
+                            <span class="text-5xl lg:text-7xl font-extrabold text-auroraBlue">%</span>
+                            <span class="text-2xl font-bold text-auroraBlue ml-2">↓</span>
+                        </div>
+                        <p class="text-lg font-semibold text-white/90 mt-2">产品界面AI翻译成本下降</p>
+                        <p class="text-base text-white/70">(7-9月月均: 11W -&gt; 2.67W)</p>
+                    </div>
+                    <div>
+                        <div class="flex items-baseline">
+                            <span class="text-5xl lg:text-6xl font-extrabold text-white">¥</span>
+                            <span class="text-6xl lg:text-8xl font-extrabold text-white">82.9</span>
+                            <span class="text-5xl lg:text-7xl font-extrabold text-white">W</span>
+                        </div>
+                        <p class="text-lg font-semibold text-white/90 mt-2">10月商品词库AI翻译节省</p>
+                        <p class="text-base text-white/70">(总计 2,961,814,271 字符)</p>
                     </div>
                 </div>
-            </header>
-            
-            <!-- Glossary - Product Interface -->
-            <div class="bento-box md:col-span-3 lg:col-span-2" data-motion-initial="hidden">
-                <h2 class="text-xl font-bold text-gray-800">词库建设 <span class="font-light text-gray-400">GLOSSARY CONSTRUCTION</span></h2>
-                <p class="mt-2 text-lg text-gray-600">【产品界面】<span class="font-bold aurora-blue-text">4809</span>条术语</p>
-                <p class="highlight-text mt-4">92.65%</p>
-                <p class="text-gray-500 text-lg -mt-2">产品界面词条覆盖率</p>
-                <div id="product-interface-chart" class="mt-4 -mb-8 -mx-8"></div>
             </div>
 
-            <!-- Glossary - Product Content -->
-            <div class="bento-box md:col-span-3 lg:col-span-2" data-motion-initial="hidden">
-                <h2 class="text-xl font-bold text-gray-800">词库建设 <span class="font-light text-gray-400">GLOSSARY CONSTRUCTION</span></h2>
-                <p class="mt-2 text-lg text-gray-600">【商品内容】<span class="font-bold aurora-blue-text">55148</span>条术语</p>
-                <p class="highlight-text mt-4">92.99%</p>
-                <p class="text-gray-500 text-lg -mt-2">商品词条覆盖率</p>
-                <div id="product-content-chart" class="mt-4 -mb-8 -mx-8"></div>
+            <!-- 卡片 10: 产能 -->
+            <div class="reveal reveal-delay-2 md:col-span-3 bg-neutral-50 rounded-3xl p-6 sm:p-8 relative">
+                <i class="fa-solid fa-pencil-ruler text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Output</p>
+                <h3 class="text-2xl font-bold text-gray-900 mt-2">产能</h3>
+                <div class="mt-4">
+                    <span class="text-6xl lg:text-7xl font-extrabold text-gray-900">29,589</span>
+                    <p class="text-lg font-semibold text-gray-700 mt-1">字 / 10月日常迭代总交付</p>
+                </div>
+                <ul class="list-disc list-outside pl-5 mt-4 space-y-1 text-base text-gray-600">
+                    <li>产品界面文案: <span class="font-bold text-gray-800">17,076</span> 字</li>
+                    <li>文档和触达内容: <span class="font-bold text-gray-800">12,513</span> 字</li>
+                    <li>其他项目 (保税入仓, XBB客退): <span class="font-bold text-gray-800">1,794</span> 字</li>
+                </ul>
             </div>
 
-            <!-- AI Translation -->
-            <div class="bento-box lg:col-span-2" data-motion-initial="hidden">
-                 <h2 class="text-xl font-bold text-gray-800">AI翻译应用 <span class="font-light text-gray-400">AI TRANSLATION</span></h2>
-                 <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-                     <div>
-                        <p class="text-gray-500">商品词库AI翻译调用 (8月)</p>
-                        <p class="text-4xl font-bold aurora-blue-text mt-1">17.2<span class="text-2xl">亿</span></p>
-                        <p class="text-gray-500">字符</p>
-                        <div class="mt-4 text-lg">折合节省 <span class="font-bold text-2xl aurora-blue-text">¥481,589.5</span></div>
-                     </div>
-                     <div class="text-center">
-                        <p class="text-gray-500">产品界面翻译成本</p>
-                        <p class="highlight-text text-6xl md:text-8xl">65%<span class="text-4xl font-semibold align-top opacity-70">&darr;</span></p>
-                        <p class="text-lg text-gray-600 -mt-2">功能上线后成本下降</p>
-                     </div>
-                 </div>
+            <!-- 卡片 11: 自动翻译 -->
+            <div class="reveal reveal-delay-3 md:col-span-3 lg:col-span-1 bg-neutral-50 rounded-3xl p-6 sm:p-8 relative">
+                <i class="fa-solid fa-magic text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Auto-Translation</p>
+                <h3 class="text-2xl font-bold text-gray-900 mt-2">自动翻译</h3>
+                <div class="mt-4">
+                    <span class="text-5xl font-extrabold text-gray-900">18,479</span>
+                    <p class="text-lg font-semibold text-gray-700 mt-1">字 / 10月自动翻译瑕疵项</p>
+                </div>
             </div>
-            
-            <!-- Experience Optimization & Infrastructure -->
-            <div class="bento-box" data-motion-initial="hidden">
-                 <h2 class="text-xl font-bold text-gray-800">体验优化 <span class="font-light text-gray-400">UX</span></h2>
-                 <div class="flex items-center gap-4 mt-4">
-                    <i class="fa-solid fa-tasks text-4xl aurora-blue-text"></i>
+
+            <!-- 卡片 12: 质量 -->
+            <div class="reveal reveal-delay-4 md:col-span-3 lg:col-span-2 bg-neutral-50 rounded-3xl p-6 sm:p-8 relative">
+                <i class="fa-solid fa-check-circle text-3xl text-auroraBlue/30 absolute top-6 right-6" aria-hidden="true"></i>
+                <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Quality (TQA)</p>
+                <h3 class="text-2xl font-bold text-gray-900 mt-2">质量 - 翻译一次通过率</h3>
+                <div class="grid grid-cols-2 gap-4 mt-4">
                     <div>
-                        <p class="text-4xl font-bold text-gray-800">22<span class="text-xl ml-1">个</span></p>
-                        <p class="text-gray-500">PRD多语言验收</p>
+                        <p class="text-base font-semibold text-gray-700">供应商 TQA 平均分</p>
+                        <ul class="list-none mt-2 space-y-1 text-base text-gray-600">
+                            <li>英: <span class="font-bold text-gray-900">100</span></li>
+                            <li>法: <span class="font-bold text-gray-900">96.5</span></li>
+                            <li>日: <span class="font-bold text-gray-900">99.3</span></li>
+                            <li>韩: <span class="font-bold text-gray-900">97.2</span></li>
+                        </ul>
                     </div>
-                 </div>
-                 <p class="mt-4 text-gray-600">拦截 <span class="font-bold text-lg aurora-blue-text">2</span> 个语言问题。</p>
+                    <div>
+                        <p class="text-base font-semibold text-gray-700">AI TQA 平均分</o>
+                        <ul class="list-none mt-2 space-y-1 text-base text-gray-600">
+                            <li>英: <span class="font-bold text-gray-900">94.0</span></li>
+                            <li>法: <span class="font-bold text-gray-900">92.6</span></li>
+                            <li>日: <span class="font-bold text-gray-900">93.5</span></li>
+                            <li>韩: <span class="font-bold text-gray-900">98.1</span></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <div class="bento-box" data-motion-initial="hidden">
-                 <h2 class="text-xl font-bold text-gray-800">多语言基建 <span class="font-light text-gray-400">INFRA</span></h2>
-                 <p class="mt-4 text-gray-600">【商家后台】新增 <span class="font-bold text-lg aurora-blue-text">15</span> 个模块全面接入SDK。</p>
-                 <p class="mt-2 text-gray-600">【客户端】卖家出价、商详、正向履约模块接入SDK。</p>
-                 <div class="absolute bottom-4 right-4 text-4xl aurora-blue-text opacity-20">
-                     <i class="fa-solid fa-cogs"></i>
-                 </div>
+
+            <!-- =================================== -->
+            <!-- 第四部分: 维持词库覆盖 -->
+            <!-- =================================== -->
+            <h2 class="md:col-span-6 text-3xl font-bold text-gray-900 mt-16 mb-4 reveal">
+                四、维持词库覆盖
+                <span class="text-base uppercase text-gray-500 font-medium ml-2">Glossary Coverage</span>
+            </h2>
+
+            <!-- 卡片 13: 词库 (宽卡) -->
+            <div class="reveal reveal-delay-1 md:col-span-6 bg-neutral-50 rounded-3xl p-6 sm:p-8 overflow-hidden relative">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                    
+                    <!-- 左侧: 文本数据 -->
+                    <div class="flex-1">
+                        <p class="text-xs uppercase text-auroraBlue font-semibold tracking-wider">Terminology</p>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mt-2">词库覆盖率</h3>
+                        
+                        <div class="mt-6 space-y-6">
+                            <div>
+                                <p class="text-lg font-semibold text-gray-700">产品界面</p>
+                                <p class="text-base text-gray-600">
+                                    10月新增 <span class="font-bold text-gray-800">82</span> 个词条，
+                                    总计 <span class="font-bold text-gray-800">5,036</span> 条
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-semibold text-gray-700">商品内容</p>
+                                <p class="text-base text-gray-600">
+                                    10月新增英语词条 <span class="font-bold text-gray-800">841</span> 条，
+                                    总量 <span class="font-bold text-gray-800">97,030</span> 条
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧: 图表 -->
+                    <div class="flex-1 grid grid-cols-2 gap-4 items-center">
+                        <!-- 图表 1: 产品界面 -->
+                        <div class="relative flex flex-col items-center justify-center">
+                            <canvas id="uiChart"></canvas>
+                            <div class="absolute flex flex-col items-center justify-center">
+                                <span class="text-3xl lg:text-4xl font-extrabold text-auroraBlue">92.5<span class="text-2xl">%</span></span>
+                                <span class="text-sm font-semibold text-gray-600 mt-1">产品界面</span>
+                            </div>
+                        </div>
+                        <!-- 图表 2: 商品内容 -->
+                        <div class="relative flex flex-col items-center justify-center">
+                            <canvas id="productChart"></canvas>
+                            <div class="absolute flex flex-col items-center justify-center">
+                                <span class="text-3xl lg:text-4xl font-extrabold text-auroraBlue">92.99<span class="text-2xl">%</span></span>
+                                <span class="text-sm font-semibold text-gray-600 mt-1">商品内容</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-            
-            <!-- Operational Efficiency -->
-            <div class="bento-box md:col-span-3 lg:col-span-4" data-motion-initial="hidden">
-                 <h2 class="text-xl font-bold text-gray-800">运营效率 <span class="font-light text-gray-400">OPERATIONAL EFFICIENCY</span></h2>
-                 <p class="mt-1 text-gray-500">8月翻译交付总量</p>
-                 <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
-                     <div>
-                         <p class="text-gray-500">日常迭代</p>
-                         <p class="text-3xl md:text-4xl font-bold aurora-blue-text">62,670<span class="text-lg ml-1">字</span></p>
-                     </div>
-                     <div>
-                         <p class="text-gray-500">KR 项目</p>
-                         <p class="text-3xl md:text-4xl font-bold aurora-blue-text">169,810<span class="text-lg ml-1">字</span></p>
-                     </div>
-                     <div>
-                         <p class="text-gray-500">其他重点项目</p>
-                         <p class="text-3xl md:text-4xl font-bold aurora-blue-text">5,017<span class="text-lg ml-1">字</span></p>
-                     </div>
-                 </div>
-            </div>
 
-        </div>
-    </div>
+        </div> <!-- end bento grid -->
 
-    <!-- Framer Motion via CDN -->
-    <script type="module">
-        import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@10.18.0/+esm";
-
-        document.querySelectorAll('[data-motion-initial="hidden"]').forEach(element => {
-            inView(element, () => {
-                animate(
-                    element,
-                    { y: [30, 0], opacity: [0, 1] },
-                    { duration: 0.6, delay: 0.1, ease: "ease-out" }
-                );
-            }, { margin: "-100px 0px" });
-        });
-    </script>
-    
-    <!-- ApexCharts via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    </div> <!-- end main container -->
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const auroraBlue = '#3B82F6';
+        document.addEventListener('DOMContentLoaded', () => {
 
-            // --- Chart 1: Product Interface ---
-            const productInterfaceData = {
-                dates: ['2024.06.14', '2024.07.05', '2024.07.19', '2024.08.02', '2024.08.16', '2024.09.06', '2024.10.27', '2025.02.07', '2025.03.18', '2025.04.27', '2025.05.30', '2025.06.19', '2025.07.29', '2025.08.29'],
-                coverage: [31.89, 40.10, 50.52, 61.59, 66.16, 77.19, 90.16, 90.83, 90.38, 92.54, 92.40, 92.89, 92.89, 92.65]
-            };
-
-            const options1 = {
-                series: [{
-                    name: '覆盖率',
-                    data: productInterfaceData.coverage
-                }],
-                chart: {
-                    type: 'area',
-                    height: 200,
-                    sparkline: { enabled: true },
-                    toolbar: { show: false },
-                    animations: { enabled: true }
-                },
-                dataLabels: { enabled: false },
-                stroke: {
-                    curve: 'smooth',
-                    width: 3,
-                    colors: [auroraBlue]
-                },
-                fill: {
-                    type: 'gradient',
-                    colors: [auroraBlue],
-                    gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.4,
-                        opacityTo: 0.1,
-                        stops: [0, 100]
-                    }
-                },
-                tooltip: {
-                    x: {
-                        formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
-                            return productInterfaceData.dates[dataPointIndex];
+            // 1. 滚动动画 (Intersection Observer)
+            // ------------------------------------
+            // 这是实现 Apple 风格滚动动画的标准方法
+            try {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry, index) => {
+                        if (entry.isIntersecting) {
+                            // 使用 setTimeout 来创建轻微的交错效果 (stagger)
+                            setTimeout(() => {
+                                entry.target.classList.add('visible');
+                            }, (index % 6) * 50); // 每行最多6个，50ms延迟
+                            observer.unobserve(entry.target);
                         }
+                    });
+                }, { 
+                    threshold: 0.1, // 元素可见 10% 时触发
+                    rootMargin: "0px 0px -50px 0px" // 触发线向上偏移50px
+                });
+
+                document.querySelectorAll('.reveal').forEach(el => {
+                    observer.observe(el);
+                });
+            } catch (e) {
+                console.error("Intersection Observer setup failed:", e);
+                // Fallback: 如果 Observer 失败，直接显示所有元素
+                document.querySelectorAll('.reveal').forEach(el => {
+                    el.classList.add('visible');
+                });
+            }
+
+
+            // 2. Chart.js 图表初始化
+            // -------------------------
+            try {
+                const auroraBlueColor = '#00A0FF';
+                const neutralColor = '#F5F5F5'; // bg-neutral-100
+
+                const chartOptions = {
+                    cutout: '80%', // 甜甜圈图的中心孔大小
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false, // 隐藏图例
+                        },
+                        tooltip: {
+                            enabled: false, // 禁用工具提示
+                        },
                     },
-                    y: {
-                        formatter: (val) => `${val}%`
-                    },
-                    marker: { show: true },
-                    theme: 'light'
-                },
-                xaxis: {
-                    categories: productInterfaceData.dates,
-                }
-            };
-
-            const chart1 = new ApexCharts(document.querySelector("#product-interface-chart"), options1);
-            chart1.render();
-
-
-            // --- Chart 2: Product Content ---
-            const productContentData = {
-                dates: ['2024.8.9', '2024.8.16', '2024.9.11', '2024.9.18', '2024.12.3', '2025.2.9', '2025.2.28', '2025.4.28', '2025.5.30', '2025.7.29', '2025.8.29'],
-                coverage: [14.44, 41.38, 59.18, 73.06, 75.83, 85.20, 83.16, 90.65, 91.50, 90.52, 92.99]
-            };
-
-            const options2 = {
-                series: [{
-                    name: '覆盖率',
-                    data: productContentData.coverage
-                }],
-                chart: {
-                    type: 'area',
-                    height: 200,
-                    sparkline: { enabled: true },
-                    toolbar: { show: false },
-                    animations: { enabled: true }
-                },
-                dataLabels: { enabled: false },
-                stroke: {
-                    curve: 'smooth',
-                    width: 3,
-                    colors: [auroraBlue]
-                },
-                fill: {
-                    type: 'gradient',
-                    colors: [auroraBlue],
-                    gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.4,
-                        opacityTo: 0.1,
-                        stops: [0, 100]
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 1500, // 动画时长
+                        easing: 'easeInOutCubic', // 缓动效果
                     }
-                },
-                tooltip: {
-                    x: {
-                         formatter: function (val, { series, seriesIndex, dataPointIndex, w }) {
-                            return productContentData.dates[dataPointIndex];
-                        }
-                    },
-                    y: {
-                        formatter: (val) => `${val}%`
-                    },
-                    marker: { show: true },
-                    theme: 'light'
-                },
-                xaxis: {
-                    categories: productContentData.dates,
-                }
-            };
+                };
 
-            const chart2 = new ApexCharts(document.querySelector("#product-content-chart"), options2);
-            chart2.render();
+                // 图表 1: 产品界面
+                const uiCtx = document.getElementById('uiChart');
+                if (uiCtx) {
+                    new Chart(uiCtx, {
+                        type: 'doughnut',
+                        data: {
+                            datasets: [{
+                                data: [92.5, 7.5], // 覆盖率 vs 未覆盖
+                                backgroundColor: [auroraBlueColor, neutralColor],
+                                borderColor: ['transparent', 'transparent'],
+                                borderWidth: 0,
+                            }]
+                        },
+                        options: chartOptions
+                    });
+                }
+
+                // 图表 2: 商品内容
+                const productCtx = document.getElementById('productChart');
+                if (productCtx) {
+                    new Chart(productCtx, {
+                        type: 'doughnut',
+                        data: {
+                            datasets: [{
+                                data: [92.99, 7.01], // 覆盖率 vs 未覆盖
+                                backgroundColor: [auroraBlueColor, neutralColor],
+                                borderColor: ['transparent', 'transparent'],
+                                borderWidth: 0,
+                            }]
+                        },
+                        options: chartOptions
+                    });
+                }
+            } catch (e) {
+                console.error("Chart.js initialization failed:", e);
+            }
+
         });
     </script>
+
 </body>
 </html>
